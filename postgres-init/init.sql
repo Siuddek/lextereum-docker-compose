@@ -1,16 +1,42 @@
-CREATE DATABASE LexNames;
+CREATE DATABASE LexInfrastructure;
 
-GRANT ALL PRIVILEGES ON DATABASE LexNames to lex;
+GRANT ALL PRIVILEGES ON DATABASE LexInfrastructure to lex;
 grant all on schema public to public;
-GRANT CONNECT ON DATABASE LexNames TO lex;
+GRANT CONNECT ON DATABASE LexInfrastructure TO lex;
 GRANT USAGE ON SCHEMA public TO lex;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO lex;
 
 CREATE TABLE IF NOT EXISTS names (
-  id int NOT NULL ,
-  name varchar(255) NOT NULL,
-  language varchar(255),
-	PRIMARY KEY(id)
+    id int NOT NULL ,
+    name varchar(255) NOT NULL,
+    language varchar(255),
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS sellagreements (
+    documentid varchar(255) NOT NULL,
+    seller varchar(255) NOT NULL,
+    sellerid varchar(127) NOT NULL,
+    buyer varchar(255) NOT NULL,
+    buyerid varchar(127) NOT NULL,
+    date varchar(127),
+    squaremeters int,
+    city varchar(127) NOT NULL,
+    mortgageregister varchar(127) NOT NULL,
+    price int NOT NULL,
+    downpayment int,
+    targetid varchar(127) NOT NULL,
+    documenthash varchar(1024) NOT NULL,
+    PRIMARY KEY(documentid)
+);
+
+CREATE TABLE IF NOT EXISTS Users (
+    name varchar(255) NOT NULL,
+    surname varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
+    phone varchar(63) NOT NULL,
+    id varchar(255) NOT NULL,
+    PRIMARY KEY(id)
 );
 
 INSERT INTO names(id, name, language) VALUES
