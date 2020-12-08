@@ -1,7 +1,9 @@
-version: '3.1'
+version: '2.1'
 
 services:
   postgres:
+    networks:
+      - lex
     image: postgres
     ports:
       - "5432:5432"
@@ -17,6 +19,8 @@ services:
       - ./minio-data:/data
     ports:
       - "9000:9000"
+    networks:
+      - lex
     environment:
       MINIO_ACCESS_KEY: lex-minio
       MINIO_SECRET_KEY: lex-minio
@@ -25,7 +29,51 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    networks:
+      - lex
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+
+  backend:
+    container_name: backend
+    image: lex-backend
+    networks:
+      - lex
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      - LC_ALL=C
+      - TESSDATA_PREFIX=/usr/share/tessdata
+    ports:
+      - "8080:8080"
+
+  frontend:
+    container_name: frontend
+    image: lex-frontend
+    networks:
+      - lex
+    depends_on:
+      - backend
+    ports:
+    - "4200:4200"
+    privileged: true
+    command: >
+      bash -c "ng serve --host 0.0.0.0 --port 4200 --disableHostCheck"
+
+  proxy:
+    image: lex-proxy
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - lex
+    ports:
+      - "80:80"
+    privileged: true
+
+
+networks:
+  lex:
